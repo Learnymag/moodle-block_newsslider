@@ -113,22 +113,24 @@ define([], function () {
         document.querySelector('#actualitesList .actualitesListItem .actualitesCategories').style.color = globalNewsSettngsDatas[0];
 
         document.querySelectorAll('#actualitesList .actualitesListItem').forEach(function(itm) {
-            itm.addEventListener('hover', function() {
-                    // over
+            const link = itm.querySelector('a');
+            const hasLink = link && link.getAttribute('href') !== '#';
+            if (hasLink) {
+                itm.addEventListener('mouseenter', function() {
                     this.style.textDecoration = 'underline';
                     this.style.color = globalNewsSettngsDatas[0];
-                }, function () {
-                    // out
+                });
+                itm.addEventListener('mouseleave', function() {
                     this.style.textDecoration = 'none';
                     this.style.color = 'initial';
-                }
-            )
+                });
+            }
         });
 
         function loop() {
 
             // Timer qui se relancera après 11 secondes
-            newsLoop = setTimeout(() => {
+            setTimeout(() => {
     
                 //console.log(`En entrant dans la boucle, la valeur de nbNews : ${nbNews} & la valeur d'activeNews : ${activeNews}`);
     

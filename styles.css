@@ -3,6 +3,7 @@
 /*************************** Set de couleurs préconfigurées ****************************/
 /* --------------------------------------- Règles CSS --------------------------------------- */
 section[data-block=newsslider] {
+  container-type: inline-size;
   background: #fff;
 }
 section[data-block=newsslider] .card-body {
@@ -66,8 +67,9 @@ section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList
   animation: newsglideRtoLDis 0.25s;
   animation-fill-mode: forwards;
 }
-section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem:hover {
+section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem:has(a[href]:not([href="#"])):hover {
   text-decoration: underline;
+  cursor: pointer;
 }
 section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem .actualitesCategories {
   font-size: 110%;
@@ -77,6 +79,9 @@ section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList
   text-decoration: none;
   font-size: 100%;
   color: rgb(33, 37, 41) !important;
+}
+section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem a[href="#"] {
+  cursor: default;
 }
 section[data-block=newsslider] .card-body .card-text #dotContainer {
   display: flex;
@@ -193,8 +198,9 @@ section[data-block=newsslider] .card-body .card-text #dotContainer .dots.sml {
   animation: newsglideRtoLDis 0.25s;
   animation-fill-mode: forwards;
 }
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem:hover {
+#block-region-side-pre section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem:has(a[href]:not([href="#"])):hover {
   text-decoration: underline;
+  cursor: pointer;
 }
 #block-region-side-pre section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem .actualitesCategories {
   font-size: 110%;
@@ -204,6 +210,9 @@ section[data-block=newsslider] .card-body .card-text #dotContainer .dots.sml {
   text-decoration: none;
   font-size: 100%;
   color: rgb(33, 37, 41) !important;
+}
+#block-region-side-pre section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem a[href="#"] {
+  cursor: default;
 }
 #block-region-side-pre section[data-block=newsslider] .card-body .card-text #dotContainer {
   display: flex;
@@ -274,4 +283,39 @@ section[data-block=newsslider] .card-body .card-text #dotContainer .dots.sml {
 
 [id^=admin-newstitle] [id^=id_s_block_newsslider_newstitle], [id^=admin-newstitle] [id^=id_s_block_newsslider_newscontent], [id^=admin-newstitle] [id^=id_s_block_newsslider_newsurl] {
   width: 100% !important;
+}
+
+@container (max-width: 350px) {
+  .card-body {
+    min-width: unset !important;
+  }
+  .card-body .card-text #newsLabelContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-body .card-text #newsLabelContent .actualitesIcon {
+    max-width: 90% !important;
+    min-width: 90% !important;
+    margin-left: 0 !important;
+  }
+  .card-body .card-text #newsLabelContent #newsList {
+    min-width: 80%;
+    min-height: 100px !important;
+    width: 100%;
+    overflow: hidden;
+  }
+  .card-body .card-text #newsLabelContent #newsList #actualitesList {
+    min-width: 100%;
+    max-width: 100%;
+    width: 100%;
+    overflow-wrap: break-word;
+  }
+  .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem {
+    overflow: clip;
+  }
+  .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem .actualitesCategories {
+    display: block;
+  }
 }/*# sourceMappingURL=styles.css.map */

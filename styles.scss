@@ -54,6 +54,8 @@ $clr-dgrd-modif-H: linear-gradient(to right, $clr-ymag-bleu 0%, $clr-ymag-vert 1
 // Page Case.
 section[data-block="newsslider"] {
 
+    container-type: inline-size;
+
     background: #fff; // rgba(255, 168, 38, 1); #9cdeaf
 
     & .card-body {
@@ -134,22 +136,27 @@ section[data-block="newsslider"] {
                                 animation-fill-mode: forwards;
                             }
         
-                            &:hover {
+                            &:has(a[href]:not([href="#"])):hover {
                                 text-decoration: underline;
+                                cursor: pointer;
                             }
-        
+
                             & .actualitesCategories {
-        
+
                                 font-size: 110%;
                                 color: #28a94d;
-        
+
                             }
-        
+
                             & a {
-        
+
                                 text-decoration: none;
                                 font-size: 100%;
                                 color: $clr-TC-police;
+
+                                &[href="#"] {
+                                    cursor: default;
+                                }
                             }
         
                         }
@@ -310,22 +317,27 @@ section[data-block="newsslider"] {
                                     animation-fill-mode: forwards;
                                 }
             
-                                &:hover {
+                                &:has(a[href]:not([href="#"])):hover {
                                     text-decoration: underline;
+                                    cursor: pointer;
                                 }
-            
+
                                 & .actualitesCategories {
-            
+
                                     font-size: 110%;
                                     color: #28a94d;
-            
+
                                 }
-            
+
                                 & a {
-            
+
                                     text-decoration: none;
                                     font-size: 100%;
                                     color: $clr-TC-police;
+
+                                    &[href="#"] {
+                                        cursor: default;
+                                    }
                                 }
             
                             }
@@ -427,5 +439,54 @@ section[data-block="newsslider"] {
 [id^="admin-newstitle"] {
     & [id^="id_s_block_newsslider_newstitle"], [id^="id_s_block_newsslider_newscontent"], [id^="id_s_block_newsslider_newsurl"] {
         width: 100% !important;
+    }
+}
+
+// Container query - bloc inférieur à 350px (indépendant de la fenêtre)
+// Couvre page case et drawer case : le container est section[data-block="newsslider"]
+@container (max-width: 350px) {
+
+    .card-body {
+
+        min-width: unset !important; // drawer case : lève le min-width: max-content
+
+        & .card-text {
+
+            & #newsLabelContent {
+
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: space-between;
+
+                & .actualitesIcon {
+                    max-width: 90% !important;
+                    min-width: 90% !important; // drawer case : lève les 250px fixes
+                    margin-left: 0 !important;
+                }
+
+                & #newsList {
+                    min-width: 80%;
+                    min-height: 100px !important;
+                    width: 100%;
+                    overflow: hidden;
+
+                    & #actualitesList {
+                        min-width: 100%;
+                        max-width: 100%;
+                        width: 100%;
+                        overflow-wrap: break-word;
+
+                        & .actualitesListItem {
+                            overflow: clip;
+
+                            & .actualitesCategories {
+                                display: block;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

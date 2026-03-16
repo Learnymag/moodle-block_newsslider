@@ -27,8 +27,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_login();
-
 if ($hassiteconfig) {
 
     if ($ADMIN->fulltree) {

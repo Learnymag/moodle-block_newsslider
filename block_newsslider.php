@@ -56,7 +56,7 @@ class block_newsslider extends block_base {
     public function applicable_formats() {
         return [
             'admin' => false,
-            'site-index' => false,
+            'site-index' => true,
             'course-view' => true,
             'mod' => false,
             'my' => true,
@@ -112,13 +112,6 @@ class block_newsslider extends block_base {
      * @return void
      */
     public function get_required_javascript() {
-
-        $this->page;
-        // Values to pass to our js.
-        $datasttngs = [
-            'clr' => get_config('block_newsslider', 'colour'),
-            'cycle' => get_config('block_newsslider', 'newsclyde'),
-        ];
 
         $this->page->requires->js_call_amd('block_newsslider/news_amd', 'init', [
             'clr' => get_config('block_newsslider', 'colour'),
