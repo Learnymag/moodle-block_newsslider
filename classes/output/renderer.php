@@ -78,4 +78,15 @@ class renderer extends plugin_renderer_base {
         $data = $news->export_for_template($this);
         return parent::render_from_template('block_newsslider/news', $data);
     }
+
+    /**
+     * Renders the "all news" page.
+     *
+     * @param news_page $page The page data.
+     * @return string The rendered template.
+     */
+    public function render_news_page(news_page $page) {
+        $data = $page->export_for_template($this);
+        return parent::render_from_template('block_newsslider/news_page', $data);
+    }
 }

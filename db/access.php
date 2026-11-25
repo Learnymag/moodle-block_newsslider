@@ -26,6 +26,15 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [
+    'block/newsslider:managesettings' => [
+        // Changes the plugin settings, shown to every user of the site: Septeo managesettings convention.
+        'riskbitmask' => RISK_CONFIG,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
     'block/newsslider:myaddinstance' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,

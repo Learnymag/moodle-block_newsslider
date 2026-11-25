@@ -26,7 +26,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_newsslider';
-$plugin->release = '0.2.0';
-$plugin->version = 2026031601;
-$plugin->requires = 2022112800;
+$plugin->release = '0.6.1';
+$plugin->version = 2026111900;
+$plugin->requires = 2024100700;
+$plugin->supported = [405, 502];
 $plugin->maturity = MATURITY_STABLE;

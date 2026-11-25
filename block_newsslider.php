@@ -69,52 +69,69 @@ class block_newsslider extends block_base {
      * @return stdClass|stdObject The block contents.
      */
     public function get_content() {
-
-        $context = context_system::instance();
-
+        $context  = context_system::instance();
         $renderer = $this->page->get_renderer('block_newsslider');
+        $listmode = self::is_list_mode();
 
         $this->content = new stdClass();
 
-        $label = format_text(get_config('block_newsslider', 'newslabel'), FORMAT_HTML, ['noclean' => false, 'filter' => true, 'context' => $context]);
+        $label = format_text(
+            get_config('block_newsslider', 'newslabel'),
+            FORMAT_HTML,
+            ['noclean' => false, 'filter' => true, 'context' => $context]
+        );
 
         $this->content->text = '';
 
-        $newsitems = [];
+        // Loading and targeting live in news_loader, shared with the "all news" page.
+        // The list mode displays neither images nor videos, so it skips the file storage.
+        $loaded    = \block_newsslider\local\news_loader::get_items(!$listmode);
+        $newsitems = $loaded['items'];
+        $has_media = $loaded['has_media'];
 
-        for ($i = 1; $i <= 6; $i++) {
-            if (get_config('block_newsslider', 'newstitle0'.$i) !== "") {
-                $news = [
-                    'class' => $i === 1 ? 'glideAppear' : 'glideDisappear',
-                    'title' => format_text(get_config('block_newsslider', 'newstitle0'.$i), FORMAT_HTML, ['noclean' => false, 'filter' => true, 'context' => $context]),
-                    'content' => format_text(get_config('block_newsslider', 'newscontent0'.$i), FORMAT_HTML, ['noclean' => false, 'filter' => true, 'context' => $context]),
-                    'link' => get_config('block_newsslider', 'newsurl0'.$i) === "" ? '#' : get_config('block_newsslider', 'newsurl0'.$i),
-                    'target' => get_config('block_newsslider', 'newstarget0'.$i),
-                    'color' => get_config('block_newsslider', 'colour'),
-                ];
-                array_push($newsitems, $news);
-            }
-        }
+        $allnewsurl = get_config('block_newsslider', 'allnewspage')
+            ? (new moodle_url('/blocks/newsslider/news.php'))->out(false)
+            : '';
 
-        $newscontent = new \block_newsslider\output\news($label, $newsitems);
+        $newscontent = new \block_newsslider\output\news(
+            $label,
+            $newsitems,
+            $has_media,
+            $listmode,
+            $allnewsurl
+        );
 
-        $this->content->text .= $renderer->render($newscontent);
-
-        $this->content->footer = '';
+        $this->content->text   .= $renderer->render($newscontent);
+        $this->content->footer  = '';
 
         return $this->content;
     }
 
     /**
+     * Tells whether the block must render as a dated list instead of the carousel.
+     *
+     * @return bool
+     */
+    private static function is_list_mode(): bool {
+        return !empty(get_config('block_newsslider', 'listmode'));
+    }
+
+    /**
      * Specify what js must be loaded and pass values to it.
-     * PR754160552RV - 14600102
-     * @param none
+     *
      * @return void
      */
     public function get_required_javascript() {
 
+        // The list mode needs no JavaScript at all, and news_amd would not survive there:
+        // it reaches for #dotContainer without a guard, so loading it against a markup that
+        // no longer carries the carousel would throw and take the whole page's JS with it.
+        if (self::is_list_mode()) {
+            return;
+        }
+
         $this->page->requires->js_call_amd('block_newsslider/news_amd', 'init', [
-            'clr' => get_config('block_newsslider', 'colour'),
+            'clr'   => get_config('block_newsslider', 'colour'),
             'cycle' => get_config('block_newsslider', 'newsclyde'),
         ]);
     }

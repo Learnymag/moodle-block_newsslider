@@ -1,4 +1,12 @@
-<div id="newsLabelContent">
+{{#islist}}
+{{> block_newsslider/news_listmode}}
+{{/islist}}
+{{^islist}}
+<div id="newsLabelContent" {{#has_media}}data-hasmedia="true"{{/has_media}}>
 {{> block_newsslider/news_label}}
 {{> block_newsslider/list_news_item}}
 </div><span id="dotContainer"></span>
+{{#hasallnews}}
+<a class="nsl-allnews" href="{{allnewsurl}}">{{allnewstext}} <span class="nsl-allnews__arrow" aria-hidden="true">&#8594;</span></a>
+{{/hasallnews}}
+{{/islist}}

@@ -1,0 +1,146 @@
+{{!
+    @template block_newsslider/news_page
+
+    The "all news" page served by news.php. Every news item visible to the reader,
+    one below the other : its media on the left, its text on the right. An item with
+    no media gives the whole width to its text.
+
+    The media column shows, in the block's own order, a single image, a slideshow when
+    several images are uploaded, then the video. The slideshow is driven by the
+    block_newsslider/news_page AMD module.
+
+    No id anywhere, no reliance on the carousel markup : the page carries its own
+    nsl-page classes, which the themes dress without having to beat the carousel rules.
+    The "read more" button is a Bootstrap btn, so it takes each product's colours.
+
+    Context variables required for this template:
+    * hasnews - whether at least one news item is visible
+    * newsitems - array of entries, each carrying title, datetext, headline, content,
+      link, target, color, tagcolour, images (url, alt, dotlabel), video_embed_url,
+      video_file_url and the hascategory / hasdate / hasmeta / hasheadline / haslink /
+      isblank / hastagcolour / has_media / has_images / has_single_image /
+      has_multiple_images / video_is_embed / video_is_file flags. With a named
+      tagcolour, the tag carries a "nsl-tag--<name>" class and no inline colour.
+
+    Example context (json):
+    {
+        "hasnews": true,
+        "newsitems": [
+            {
+                "title": "Pedagogie",
+                "datetext": "18 aout",
+                "headline": "Nouvelle grille d'evaluation disponible",
+                "content": "La grille harmonisee pour le BTS MCO est accessible.",
+                "link": "https://example.org/news/1",
+                "target": "_self",
+                "color": "#28a94d",
+                "tagcolour": "green",
+                "hastagcolour": true,
+                "hascategory": true,
+                "hasdate": true,
+                "hasmeta": true,
+                "hasheadline": true,
+                "haslink": true,
+                "isblank": false,
+                "has_media": true,
+                "has_images": true,
+                "has_single_image": false,
+                "has_multiple_images": true,
+                "images": [
+                    {"url": "https://example.org/1.png", "alt": "", "dotlabel": "Image 1"},
+                    {"url": "https://example.org/2.png", "alt": "", "dotlabel": "Image 2"}
+                ],
+                "video_is_embed": false,
+                "video_embed_url": "",
+                "video_is_file": false,
+                "video_file_url": ""
+            }
+        ]
+    }
+}}
+<div class="nsl-page">
+    {{#hasnews}}
+    <div class="nsl-page__items">
+        {{#newsitems}}
+        <article class="nsl-page__item{{#has_media}} nsl-page__item--media{{/has_media}}">
+
+            {{#has_media}}
+            <div class="nsl-page__media">
+
+                {{#has_single_image}}
+                {{#images}}
+                <img class="nsl-page__image" src="{{url}}" alt="{{alt}}" loading="lazy">
+                {{/images}}
+                {{/has_single_image}}
+
+                {{#has_multiple_images}}
+                <div class="nsl-page__slideshow" data-region="nsl-slideshow">
+                    <div class="nsl-page__track" data-region="nsl-track">
+                        {{#images}}
+                        <img class="nsl-page__slide" src="{{url}}" alt="{{alt}}" loading="lazy">
+                        {{/images}}
+                    </div>
+                    <button class="nsl-page__prev" type="button" data-action="nsl-prev"
+                            aria-label="{{#str}}prevslide, block_newsslider{{/str}}">&#8249;</button>
+                    <button class="nsl-page__next" type="button" data-action="nsl-next"
+                            aria-label="{{#str}}nextslide, block_newsslider{{/str}}">&#8250;</button>
+                    <div class="nsl-page__dots">
+                        {{#images}}
+                        <button class="nsl-page__dot" type="button" data-action="nsl-goto"
+                                aria-label="{{dotlabel}}"></button>
+                        {{/images}}
+                    </div>
+                </div>
+                {{/has_multiple_images}}
+
+                {{#video_is_embed}}
+                <div class="nsl-page__video">
+                    <iframe src="{{video_embed_url}}"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen
+                            loading="lazy"></iframe>
+                </div>
+                {{/video_is_embed}}
+
+                {{#video_is_file}}
+                <div class="nsl-page__video">
+                    <video controls preload="metadata">
+                        <source src="{{video_file_url}}">
+                    </video>
+                </div>
+                {{/video_is_file}}
+
+            </div>
+            {{/has_media}}
+
+            <div class="nsl-page__body">
+                {{#hasmeta}}
+                <div class="nsl-page__meta">
+                    {{#hascategory}}
+                    <span class="nsl-page__tag{{#hastagcolour}} nsl-tag nsl-tag--{{tagcolour}}{{/hastagcolour}}"{{^hastagcolour}} style="--nsl-tag-color: {{color}};"{{/hastagcolour}}>{{{title}}}</span>
+                    {{/hascategory}}
+                    {{#hasdate}}
+                    <span class="nsl-page__date">{{datetext}}</span>
+                    {{/hasdate}}
+                </div>
+                {{/hasmeta}}
+
+                {{#hasheadline}}
+                <div class="nsl-page__headline" role="heading" aria-level="2">{{{headline}}}</div>
+                {{/hasheadline}}
+
+                <div class="nsl-page__content">{{{content}}}</div>
+
+                {{#haslink}}
+                <a class="nsl-page__more btn btn-sm btn-outline-primary" href="{{link}}" target="{{target}}" {{#isblank}}rel="noopener noreferrer"{{/isblank}}>{{#str}}readmore, block_newsslider{{/str}} <span class="nsl-page__arrow" aria-hidden="true">&#8594;</span></a>
+                {{/haslink}}
+            </div>
+
+        </article>
+        {{/newsitems}}
+    </div>
+    {{/hasnews}}
+    {{^hasnews}}
+    <p class="nsl-page__empty">{{#str}}nonews, block_newsslider{{/str}}</p>
+    {{/hasnews}}
+</div>

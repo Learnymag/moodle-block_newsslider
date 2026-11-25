@@ -1,0 +1,80 @@
+{{!
+    @template block_newsslider/news_listmode
+
+    Dated list display mode — the alternative to the carousel, switched on by the
+    "listmode" plugin setting. Entries are stacked and all visible at once, so this
+    markup shares nothing with list_news_item.mustache and needs no JavaScript.
+
+    Neither images nor videos are rendered here: the design calls for text only.
+
+    Context variables required for this template:
+    * content - the block label, rendered as the card header
+    * newsitems - array of entries, each carrying title, datetext, headline, content,
+      link, target, color, tagcolour and the hasdate / hascategory / hasmeta /
+      hasexcerpt / haslink / isblank / hastagcolour flags. With a named tagcolour, the
+      tag carries a "nsl-tag--<name>" class and no inline colour.
+    * hasallnews - whether a footer link must be rendered
+    * allnewsurl - the URL of the page listing every news item
+    * allnewstext - the label of the footer link
+
+    Example context (json):
+    {
+        "content": "Actualites",
+        "newsitems": [
+            {
+                "title": "Pedagogie",
+                "datetext": "18 aout",
+                "headline": "Nouvelle grille d'evaluation disponible",
+                "content": "La grille harmonisee pour le BTS MCO est accessible.",
+                "link": "https://example.org/news/1",
+                "target": "_self",
+                "color": "#28a94d",
+                "tagcolour": "green",
+                "hastagcolour": true,
+                "hasdate": true,
+                "hascategory": true,
+                "hasmeta": true,
+                "hasexcerpt": true,
+                "haslink": true,
+                "isblank": false
+            }
+        ],
+        "hasallnews": true,
+        "allnewsurl": "https://example.org/news",
+        "allnewstext": "Toutes les actualites"
+    }
+}}
+<div class="nsl-list">
+    <div class="nsl-list__header">{{content}}</div>
+
+    <div class="nsl-list__items">
+        {{#newsitems}}
+        {{#haslink}}<a class="nsl-list__item" href="{{link}}" target="{{target}}" {{#isblank}}rel="noopener noreferrer"{{/isblank}}>{{/haslink}}
+        {{^haslink}}<div class="nsl-list__item nsl-list__item--static">{{/haslink}}
+
+            {{#hasmeta}}
+            <div class="nsl-list__meta">
+                {{#hascategory}}
+                <span class="nsl-list__tag{{#hastagcolour}} nsl-tag nsl-tag--{{tagcolour}}{{/hastagcolour}}"{{^hastagcolour}} style="--nsl-tag-color: {{color}};"{{/hastagcolour}}>{{{title}}}</span>
+                {{/hascategory}}
+                {{#hasdate}}
+                <span class="nsl-list__date">{{datetext}}</span>
+                {{/hasdate}}
+            </div>
+            {{/hasmeta}}
+
+            <div class="nsl-list__headline">{{{headline}}}</div>
+
+            {{#hasexcerpt}}
+            <div class="nsl-list__excerpt">{{{content}}}</div>
+            {{/hasexcerpt}}
+
+        {{#haslink}}</a>{{/haslink}}
+        {{^haslink}}</div>{{/haslink}}
+        {{/newsitems}}
+    </div>
+
+    {{#hasallnews}}
+    <a class="nsl-list__footer" href="{{allnewsurl}}">{{allnewstext}} <span class="nsl-list__arrow" aria-hidden="true">&#8594;</span></a>
+    {{/hasallnews}}
+</div>

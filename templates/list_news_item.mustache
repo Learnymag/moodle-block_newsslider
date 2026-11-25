@@ -1,8 +1,54 @@
-<div id="newsList"><ul id="actualitesList">
+<div id="newsList"><ul id="actualitesList" {{#has_media}}data-hasmedialist="true"{{/has_media}}>
 {{#newsitems}}
-<li class="actualitesListItem {{class}}">
-    <span class="actualitesCategories" style="color: {{color}};">{{title}} :</span>
-    <a href="{{link}}" target="{{target}}">{{content}}</a>
+<li class="actualitesListItem {{class}}" {{#has_media}}data-hasmedia="true"{{/has_media}}>
+
+    {{! ── Images carousel ──────────────────────────────────────── }}
+    {{#has_images}}
+    <div class="news-carousel">
+        <div class="carousel-track">
+            {{#images}}
+            <img src="{{url}}" alt="{{alt}}" class="carousel-img" loading="lazy" />
+            {{/images}}
+        </div>
+        {{#has_multiple_images}}
+        <button class="carousel-prev" type="button" aria-label="Previous image">&#8249;</button>
+        <button class="carousel-next" type="button" aria-label="Next image">&#8250;</button>
+        <div class="carousel-indicators">
+            {{#images}}
+            <span class="carousel-dot"></span>
+            {{/images}}
+        </div>
+        {{/has_multiple_images}}
+    </div>
+    {{/has_images}}
+
+    {{! ── Video embed (YouTube / Vimeo) ────────────────────────── }}
+    {{#video_is_embed}}
+    <div class="news-video-container">
+        <iframe src="{{video_embed_url}}"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                loading="lazy">
+        </iframe>
+    </div>
+    {{/video_is_embed}}
+
+    {{! ── Video direct file (mp4 / webm / ogg) ────────────────── }}
+    {{#video_is_file}}
+    <div class="news-video-container">
+        <video controls preload="metadata">
+            <source src="{{video_file_url}}" />
+        </video>
+    </div>
+    {{/video_is_file}}
+
+    {{! ── Text content ─────────────────────────────────────────── }}
+    <div class="news-text-content">
+        <span class="actualitesCategories{{#hastagcolour}} nsl-tag nsl-tag--{{tagcolour}}{{/hastagcolour}}"{{^hastagcolour}} style="color: {{color}};"{{/hastagcolour}}>{{title}} :</span>
+        <a href="{{link}}" target="{{target}}">{{{content}}}</a>
+    </div>
+
 </li>
 {{/newsitems}}
 </ul></div>

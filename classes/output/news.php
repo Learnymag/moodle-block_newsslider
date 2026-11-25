@@ -37,24 +37,52 @@ use stdClass;
  */
 class news implements renderable, templatable {
     /**
-     * @var news_label The news label.
+     * @var string The news label.
      */
     private $news_label;
 
     /**
-     * @var list_news The list of news items.
+     * @var array The list of news items.
      */
     private $list_news;
 
     /**
+     * @var bool Whether at least one news item has media (image or video).
+     *           When true, all items should use the expanded (media) layout.
+     */
+    private $has_media;
+
+    /**
+     * @var bool Whether the block renders as a dated list instead of the carousel.
+     */
+    private $islist;
+
+    /**
+     * @var string URL of the page listing every news item, '' when not configured.
+     */
+    private $allnewsurl;
+
+    /**
      * Constructor for the news class.
      *
-     * @param news_label $news_label The news label.
-     * @param list_news $list_news The list of news items.
+     * @param string $news_label The news label.
+     * @param array  $list_news  The list of news items.
+     * @param bool   $has_media  True if any item has media.
+     * @param bool   $islist     True to render the dated list instead of the carousel.
+     * @param string $allnewsurl URL of the "all news" page, '' to render no footer link.
      */
-    public function __construct(string $news_label, array $list_news) {
+    public function __construct(
+        string $news_label,
+        array $list_news,
+        bool $has_media = false,
+        bool $islist = false,
+        string $allnewsurl = ''
+    ) {
         $this->news_label = $news_label;
-        $this->list_news = $list_news;
+        $this->list_news  = $list_news;
+        $this->has_media  = $has_media;
+        $this->islist     = $islist;
+        $this->allnewsurl = $allnewsurl;
     }
 
     /**
@@ -65,8 +93,13 @@ class news implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output) {
         return [
-            'content' => $this->news_label,
-            'newsitems' => $this->list_news,
+            'content'     => $this->news_label,
+            'newsitems'   => $this->list_news,
+            'has_media'   => $this->has_media,
+            'islist'      => $this->islist,
+            'allnewsurl'  => $this->allnewsurl,
+            'hasallnews'  => $this->allnewsurl !== '',
+            'allnewstext' => get_string('allnews', 'block_newsslider'),
         ];
     }
 }

@@ -1,275 +1,356 @@
 @charset "UTF-8";
-/* ----------------------------------------- Section des variables ----------------------------------------- */
-/*************************** Set de couleurs préconfigurées ****************************/
-/* --------------------------------------- Règles CSS --------------------------------------- */
+/*
+ * block_newsslider — styles.css
+ *
+ * Deux modes d'affichage selon la largeur du bloc :
+ *   < 500px  → mode "narrow"  : titre / actualité / points empilés verticalement,
+ *               centrés, sans décalage left sur les items, animation fade seule.
+ *   ≥ 500px  → mode "wide"   : titre et actualité côte à côte (space-between),
+ *               points centrés en bas, décalage left conservé, vidéo contrainte.
+ *
+ * La classe .is-narrow est posée/retirée dynamiquement par ResizeObserver (JS).
+ *
+ * KEY FIX: #actualitesList est position:relative (était position:absolute).
+ * Les items restent position:absolute pour l'animation de superposition ;
+ * min-height empêche la liste de s'effondrer puisque tous ses enfants
+ * sont hors-flux.
+ */
+
+/* ── Wrapper du bloc ─────────────────────────────────────────────────────── */
 section[data-block=newsslider] {
   container-type: inline-size;
   background: #fff;
 }
+
 section[data-block=newsslider] .card-body {
   padding: 0 !important;
 }
-section[data-block=newsslider] .card-body h3.card-title, section[data-block=newsslider] .card-body h5.card-title {
+
+section[data-block=newsslider] .card-body h3.card-title,
+section[data-block=newsslider] .card-body h5.card-title {
   display: none !important;
-}
-section[data-block=newsslider] .card-body .card-text {
-  overflow: visible !important;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-section[data-block=newsslider] .card-body .card-text #newsLabelContent {
-  display: flex;
-}
-section[data-block=newsslider] .card-body .card-text #newsLabelContent .actualitesIcon {
-  position: relative;
-  background-color: #28a94d;
-  padding: 10px 15px 10px 15px;
-  border-radius: 0.3rem;
-  font-weight: 600;
-  color: rgb(255, 255, 255) !important;
-  margin-left: 20px;
-  max-width: 50%;
-}
-section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 80%;
-}
-section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList {
-  display: flex;
-  list-style-type: none;
-  position: absolute;
-  min-width: 80%;
-  align-items: center;
-  margin: 0;
-}
-section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem {
-  position: absolute;
-  visibility: hidden;
-  opacity: 0;
-  transition: all 1s ease-in-out;
-  animation-timing-function: ease-in-out;
-  -webkit-animation-timing-function: ease-in-out;
-}
-section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem.glideAppear {
-  opacity: 0;
-  visibility: hidden;
-  left: 60px;
-  animation: newsglideRtoLApp 0.25s;
-  animation-fill-mode: forwards;
-}
-section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem.glideDisappear {
-  opacity: 1;
-  visibility: visible;
-  left: 30px;
-  animation: newsglideRtoLDis 0.25s;
-  animation-fill-mode: forwards;
-}
-section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem:has(a[href]:not([href="#"])):hover {
-  text-decoration: underline;
-  cursor: pointer;
-}
-section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem .actualitesCategories {
-  font-size: 110%;
-  color: #28a94d;
-}
-section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem a {
-  text-decoration: none;
-  font-size: 100%;
-  color: rgb(33, 37, 41) !important;
-}
-section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem a[href="#"] {
-  cursor: default;
-}
-section[data-block=newsslider] .card-body .card-text #dotContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 18px;
-}
-section[data-block=newsslider] .card-body .card-text #dotContainer .dots {
-  border-radius: 50%;
-  display: inline-block;
-  margin: 0 5px 0 5px;
-  transition: all 0.25s ease-in-out;
-  animation-timing-function: ease-in-out;
-  -webkit-animation-timing-function: ease-in-out;
-}
-section[data-block=newsslider] .card-body .card-text #dotContainer .dots.grey {
-  background-color: #a9a9a9;
-  opacity: 80%;
-}
-section[data-block=newsslider] .card-body .card-text #dotContainer .dots.grey:hover {
-  background-color: #a9a9a9;
-  opacity: 100%;
-  cursor: pointer;
-}
-section[data-block=newsslider] .card-body .card-text #dotContainer .dots.green {
-  background-color: #28a94d;
-  opacity: 80%;
-}
-section[data-block=newsslider] .card-body .card-text #dotContainer .dots.green:hover {
-  background-color: #28a94d;
-  opacity: 100%;
-  cursor: pointer;
-}
-section[data-block=newsslider] .card-body .card-text #dotContainer .dots.lrg {
-  height: 12px;
-  width: 12px;
-}
-section[data-block=newsslider] .card-body .card-text #dotContainer .dots.sml {
-  height: 8px;
-  width: 8px;
 }
 
-#block-region-side-pre section[data-block=newsslider] {
-  background: #fff;
-}
-#block-region-side-pre section[data-block=newsslider] .card-body {
-  padding: 0 !important;
-  min-width: -moz-max-content;
-  min-width: max-content;
-}
-#block-region-side-pre section[data-block=newsslider] .card-body h3.card-title, #block-region-side-pre section[data-block=newsslider] .card-body h5.card-title {
-  display: none !important;
-}
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text {
-  overflow: visible !important;
-  display: flex;
-  min-height: 100%;
-}
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #newsLabelContent {
+/* Colonne externe : [ligne titre+actualité] puis [points de navigation] */
+section[data-block=newsslider] .card-body .card-text {
   display: flex;
   flex-direction: column;
 }
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #newsLabelContent .actualitesIcon {
-  position: relative;
+
+/* ── Ligne label + liste d'actualités ────────────────────────────────────── */
+/* Mode wide (par défaut) : côte à côte avec espace entre */
+#newsLabelContent {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+}
+
+/* Badge catégorie / label */
+.actualitesIcon {
+  flex-shrink: 0;
+  align-self: center;
   background-color: #28a94d;
-  padding: 10px 15px 10px 15px;
+  padding: 10px 15px;
   border-radius: 0.3rem;
   font-weight: 600;
-  color: rgb(255, 255, 255) !important;
+  color: #fff !important;
   margin-left: 20px;
-  max-width: 250px;
-  min-width: 250px;
-  text-wrap: pretty;
+  max-width: 50%;
+  overflow-wrap: break-word;
 }
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList {
+
+/* Wrapper liste — prend tout l'espace horizontal restant */
+#newsList {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-width: 100%;
-  min-height: 110px;
 }
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList {
-  display: flex;
-  list-style-type: none;
-  position: absolute;
-  min-width: 95%;
-  align-items: center;
+
+/* ── Liste des actualités ────────────────────────────────────────────────── */
+#actualitesList {
+  position: relative;
+  list-style: none;
+  width: 100%;
   margin: 0;
-  min-height: 100%;
-  height: 100%;
+  padding: 0;
+  min-height: 80px;
+  overflow: hidden;
 }
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem {
+
+/* Mode avec médias (JS ajoute cette classe si ≥ 1 item a une image/vidéo) */
+#actualitesList.has-media-items {
+  min-height: 240px;    /* réduit car layout côte-à-côte en wide (vidéo max ~200px) */
+}
+
+/* ── Item d'actualité (base) ─────────────────────────────────────────────── */
+.actualitesListItem {
   position: absolute;
+  top: 0;
+  left: 0;       /* position de repos → aligné avec le parent */
+  right: 0;
   visibility: hidden;
   opacity: 0;
-  min-height: 110px;
-  padding: 10px 0;
-  transition: all 1s ease-in-out;
   animation-timing-function: ease-in-out;
-  -webkit-animation-timing-function: ease-in-out;
 }
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem.glideAppear {
-  opacity: 0;
-  visibility: hidden;
-  left: 60px;
-  animation: newsglideRtoLApp 0.25s;
-  animation-fill-mode: forwards;
+
+/* Mode avec médias : mise en page colonne dans chaque item */
+#actualitesList.has-media-items .actualitesListItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
 }
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem.glideDisappear {
-  opacity: 1;
-  visibility: visible;
-  left: 30px;
-  animation: newsglideRtoLDis 0.25s;
-  animation-fill-mode: forwards;
+
+#actualitesList.has-media-items .actualitesListItem[data-hasmedia="true"] {
+  padding: 0;
 }
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem:has(a[href]:not([href="#"])):hover {
-  text-decoration: underline;
+
+/* ── Centrage vertical/horizontal pour les items TEXTE SEUL ──────────────── */
+/* (sans image ni vidéo — dans les deux modes) */
+.actualitesListItem:not([data-hasmedia="true"]) {
+  bottom: 0;          /* remplit la hauteur de #actualitesList */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.actualitesListItem:not([data-hasmedia="true"]) .news-text-content {
+  text-align: center;
+  padding: 8px 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Curseur pointer sur les items avec un vrai lien */
+.actualitesListItem:has(a[href]:not([href="#"])):hover {
   cursor: pointer;
 }
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem .actualitesCategories {
+
+/* ── Label catégorie ──────────────────────────────────────────────────────── */
+.actualitesCategories {
   font-size: 110%;
   color: #28a94d;
 }
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem a {
+
+/* ── Liens ────────────────────────────────────────────────────────────────── */
+.actualitesListItem a {
   text-decoration: none;
   font-size: 100%;
   color: rgb(33, 37, 41) !important;
+  word-break: break-word;
 }
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem a[href="#"] {
+
+.actualitesListItem a[href="#"] {
   cursor: default;
 }
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #dotContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 18px;
+
+/* ── Animations de défilement — MODE WIDE (avec left) ───────────────────── */
+/* Appear : part de left:30px (décalage), arrive à left:0 (position de repos) */
+.actualitesListItem.glideAppear {
+  opacity: 0;
+  visibility: hidden;
+  left: 30px;
+  animation: newsglideRtoLApp 0.25s ease-in-out;
+  animation-fill-mode: forwards;
 }
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #dotContainer .dots {
-  border-radius: 50%;
-  display: inline-block;
-  margin: 0 5px 0 5px;
-  transition: all 0.25s ease-in-out;
-  animation-timing-function: ease-in-out;
-  -webkit-animation-timing-function: ease-in-out;
-}
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #dotContainer .dots.grey {
-  background-color: #a9a9a9;
-  opacity: 80%;
-}
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #dotContainer .dots.grey:hover {
-  background-color: #a9a9a9;
-  opacity: 100%;
-  cursor: pointer;
-}
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #dotContainer .dots.green {
-  background-color: #28a94d;
-  opacity: 80%;
-}
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #dotContainer .dots.green:hover {
-  background-color: #28a94d;
-  opacity: 100%;
-  cursor: pointer;
-}
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #dotContainer .dots.lrg {
-  height: 12px;
-  width: 12px;
-}
-#block-region-side-pre section[data-block=newsslider] .card-body .card-text #dotContainer .dots.sml {
-  height: 8px;
-  width: 8px;
+
+/* Disappear : part de left:0 (repos), glisse vers left:30px */
+.actualitesListItem.glideDisappear {
+  opacity: 1;
+  visibility: visible;
+  left: 0;
+  animation: newsglideRtoLDis 0.25s ease-in-out;
+  animation-fill-mode: forwards;
 }
 
 @keyframes newsglideRtoLApp {
   to {
     opacity: 1;
     visibility: visible;
-    left: 30px;
+    left: 0;
   }
 }
+
 @keyframes newsglideRtoLDis {
   to {
     opacity: 0;
     visibility: hidden;
-    left: 60px;
+    left: 30px;
   }
 }
+
+/* ── Animations de défilement — MODE NARROW (fade seul, sans left) ───────── */
+@keyframes newsFadeApp {
+  from { opacity: 0; visibility: hidden; }
+  to   { opacity: 1; visibility: visible; }
+}
+
+@keyframes newsFadeDis {
+  from { opacity: 1; visibility: visible; }
+  to   { opacity: 0; visibility: hidden; }
+}
+
+/* ── Points de navigation ────────────────────────────────────────────────── */
+#dotContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 18px;
+}
+
+#dotContainer .dots {
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 5px;
+  transition: all 0.25s ease-in-out;
+}
+
+#dotContainer .dots.grey {
+  background-color: #a9a9a9;
+  opacity: 0.8;
+}
+
+#dotContainer .dots.grey:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+#dotContainer .dots.green {
+  background-color: #28a94d;
+  opacity: 0.8;
+}
+
+#dotContainer .dots.green:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+#dotContainer .dots.lrg {
+  height: 12px;
+  width: 12px;
+}
+
+#dotContainer .dots.sml {
+  height: 8px;
+  width: 8px;
+}
+
+/* ── Carrousel d'images ──────────────────────────────────────────────────── */
+.news-carousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;      /* intentionnel : masque la piste en défilement */
+  border-radius: 0.3rem;
+  background: #f0f0f0;
+  flex-shrink: 0;
+}
+
+.news-carousel .carousel-track {
+  display: flex;
+  transition: transform 0.35s ease-in-out;
+  will-change: transform;
+}
+
+.news-carousel .carousel-track .carousel-img {
+  min-width: 100%;
+  max-width: 100%;
+  height: 200px;
+  object-fit: contain;   /* était : cover — affiche l'image entière sans la rogner */
+  display: block;
+  flex-shrink: 0;
+}
+
+.news-carousel .carousel-prev,
+.news-carousel .carousel-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  border: none;
+  padding: 0 10px 6px 10px;
+  cursor: pointer;
+  font-size: 1.6rem;
+  line-height: 1;
+  z-index: 10;
+  border-radius: 0.25rem;
+  transition: background 0.2s ease;
+}
+
+.news-carousel .carousel-prev:hover,
+.news-carousel .carousel-next:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.news-carousel .carousel-prev { left: 6px; }
+.news-carousel .carousel-next { right: 6px; }
+
+.news-carousel .carousel-indicators {
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;   /* centrage robuste sans transform */
+  gap: 5px;
+}
+
+.news-carousel .carousel-indicators .carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.news-carousel .carousel-indicators .carousel-dot.active {
+  background: rgba(255, 255, 255, 0.95);
+  transform: scale(1.25);
+}
+
+/* ── Conteneur vidéo ─────────────────────────────────────────────────────── */
+/*
+ * width: min(100%, 498px)  →  max 498px ≈ 280px × 16/9 → jamais plus de 280px
+ *                              de haut tout en conservant le ratio 16:9.
+ * max-height: 280px        →  cap final si le ratio est ignoré par le navigateur.
+ * overflow: hidden         →  coupe tout débordement (iframe, video).
+ */
+.news-video-container {
+  width: min(100%, 498px);
+  max-height: 280px;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.3rem;
+  overflow: hidden;
+  background: #000;
+  flex-shrink: 0;
+}
+
+.news-video-container iframe,
+.news-video-container video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: none;
+  object-fit: contain;
+}
+
+/* ── Zone de texte ────────────────────────────────────────────────────────── */
+.news-text-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0 2px 0;
+  min-width: 0;
+  word-break: break-word;
+}
+
+/* ── Administration ──────────────────────────────────────────────────────── */
 .mandatoryfields {
   color: #e54f6b;
   font-style: italic;
@@ -281,41 +362,512 @@ section[data-block=newsslider] .card-body .card-text #dotContainer .dots.sml {
   margin-top: 10px !important;
 }
 
-[id^=admin-newstitle] [id^=id_s_block_newsslider_newstitle], [id^=admin-newstitle] [id^=id_s_block_newsslider_newscontent], [id^=admin-newstitle] [id^=id_s_block_newsslider_newsurl] {
+[id^=admin-newstitle] [id^=id_s_block_newsslider_newstitle],
+[id^=admin-newstitle] [id^=id_s_block_newsslider_newscontent],
+[id^=admin-newstitle] [id^=id_s_block_newsslider_newsurl] {
   width: 100% !important;
 }
 
-@container (max-width: 350px) {
-  .card-body {
-    min-width: unset !important;
+/* ── Widget de filtrage de ciblage ───────────────────────────────────────── */
+.newsfilter-widget {
+  padding: 8px 0;
+}
+
+.newsfilter-widget .newsfilter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.newsfilter-widget .newsfilter-label {
+  font-weight: 600;
+  min-width: 180px;
+}
+
+.newsfilter-widget .newsfilter-field-select {
+  min-width: 240px;
+}
+
+.newsfilter-widget .newsfilter-values-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
+.newsfilter-widget .newsfilter-values-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
+.newsfilter-widget .newsfilter-value-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.newsfilter-widget .newsfilter-text-input {
+  flex: 1;
+  min-width: 240px;
+  max-width: 480px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   MODE WIDE (≥ 500px) — items avec MÉDIA : vidéo/image à gauche, texte à droite
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Item avec média : flex row (côte à côte), centré verticalement */
+section[data-block=newsslider]:not(.is-narrow)
+  #actualitesList.has-media-items
+  .actualitesListItem[data-hasmedia="true"] {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  bottom: 0;          /* remplit la hauteur de #actualitesList pour le centrage */
+}
+
+/* Vidéo : colonne gauche, largeur fixe à ~55%, hauteur plafonnée */
+section[data-block=newsslider]:not(.is-narrow)
+  #actualitesList.has-media-items
+  .actualitesListItem[data-hasmedia="true"]
+  .news-video-container {
+  flex: 0 0 55%;
+  min-width: 0;
+  width: 55%;
+  max-height: 200px;
+  /* aspect-ratio, overflow, background hérités de la règle de base */
+}
+
+/* Carrousel d'images : même proportion que la vidéo */
+section[data-block=newsslider]:not(.is-narrow)
+  #actualitesList.has-media-items
+  .actualitesListItem[data-hasmedia="true"]
+  .news-carousel {
+  flex: 0 0 55%;
+  min-width: 0;
+  width: 55%;
+  max-height: 200px;
+}
+
+/* Images dans le carrousel (hauteur cohérente avec le plafond) */
+section[data-block=newsslider]:not(.is-narrow)
+  #actualitesList.has-media-items
+  .actualitesListItem[data-hasmedia="true"]
+  .news-carousel .carousel-track .carousel-img {
+  height: 200px;
+}
+
+/* Texte : colonne droite, prend l'espace restant */
+section[data-block=newsslider]:not(.is-narrow)
+  #actualitesList.has-media-items
+  .actualitesListItem[data-hasmedia="true"]
+  .news-text-content {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 0;
+  align-self: center;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   MODE NARROW  (< 500px)
+   La classe .is-narrow est posée sur section[data-block=newsslider] par JS.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Conteneur principal : centrage + padding de 10px */
+section[data-block=newsslider].is-narrow .card-body .card-text {
+  align-items: center;
+  padding: 10px;
+  gap: 8px;
+}
+
+/* Ligne label+actualité → colonne centrée */
+section[data-block=newsslider].is-narrow #newsLabelContent {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 8px;
+}
+
+/* Badge : pleine largeur, centré */
+section[data-block=newsslider].is-narrow .actualitesIcon {
+  max-width: 100% !important;
+  min-width: auto !important;
+  width: 100%;
+  margin-left: 0 !important;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Liste d'actualités : pleine largeur */
+section[data-block=newsslider].is-narrow #newsList {
+  width: 100%;
+  flex: none;
+}
+
+/* Points de navigation : pleine largeur (déjà centrés) */
+section[data-block=newsslider].is-narrow #dotContainer {
+  width: 100%;
+}
+
+/* Items : suppression du décalage left */
+section[data-block=newsslider].is-narrow .actualitesListItem {
+  left: 0 !important;
+}
+
+/* Animation appear en narrow : fade seul (pas de déplacement left) */
+section[data-block=newsslider].is-narrow .actualitesListItem.glideAppear {
+  left: 0 !important;
+  animation-name: newsFadeApp;
+}
+
+/* Animation disappear en narrow : fade seul */
+section[data-block=newsslider].is-narrow .actualitesListItem.glideDisappear {
+  left: 0 !important;
+  animation-name: newsFadeDis;
+}
+
+/* Images carrousel en narrow : légèrement moins hautes */
+section[data-block=newsslider].is-narrow .news-carousel .carousel-track .carousel-img {
+  height: 160px;
+}
+
+/* Items avec média en narrow : remplissent le conteneur et centrent verticalement */
+section[data-block=newsslider].is-narrow
+  #actualitesList.has-media-items
+  .actualitesListItem[data-hasmedia="true"] {
+  bottom: 0;
+  justify-content: center;
+}
+
+/* Hauteur mini de la liste avec médias réduite en narrow */
+section[data-block=newsslider].is-narrow #actualitesList.has-media-items {
+  min-height: 220px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   MODE LISTE — activé par le réglage « listmode »
+   ────────────────────────────────────────────────────────────────────────────
+   RÉPARTITION DU TRAVAIL, à ne pas re-litiger : le plugin émet la STRUCTURE,
+   theme_ypareoneolms émet l'APPARENCE. Cette section ne porte donc QUE du CSS
+   fonctionnel — mise en flux, débordement, états, réinitialisation du lien de
+   bloc. Aucune couleur, aucune taille de police, aucun espacement décoratif :
+   les valeurs de la maquette (13px/12px/11px/10px, neutral-60, indigo-60, les
+   filets) appartiennent au thème, qui les remonte à ses jetons.
+
+   Trois contraintes, chacune payée une fois ailleurs dans le parc :
+   - Jamais de taille de police relative : le thème pose la base à 14px là où ces
+     blocs ont été dessinés pour 16, et tout em fond de 12,5 % en silence.
+   - Aucune priorité forcée : chacune oblige le thème à en écrire une en miroir.
+   - Aucun id : #newsList et consorts se dupliquent dès deux instances du bloc.
+
+   La section est isolée du carrousel, qui est entièrement accroché à
+   #actualitesList / .actualitesListItem — non émis dans ce mode.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Entrée cliquable : le lien doit se comporter en conteneur, pas en bout de
+   texte souligné. C'est une réinitialisation fonctionnelle, pas du style. */
+.nsl-list__item {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.nsl-list__item:hover,
+.nsl-list__item:focus-visible {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Pastille, date : sur une seule ligne, alignées, quelle que soit leur hauteur */
+.nsl-list__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* La couleur de la pastille est une DONNÉE (réglage « colour »), pas un choix de
+   design : le gabarit l'émet en propriété personnalisée sur l'élément, et le
+   thème peut la reprendre ou la remplacer. Sans thème, rien ne se peint. */
+.nsl-list__tag {
+  display: inline-block;
+  background-color: var(--nsl-tag-color, transparent);
+  white-space: nowrap;
+}
+
+/* Titre et extrait passent par format_text() : un administrateur peut y coller
+   des <p>, dont la marge basse par défaut ajouterait un blanc que personne n'a
+   demandé sous la dernière ligne. */
+.nsl-list__headline > p:last-child,
+.nsl-list__excerpt > p:last-child {
+  margin-bottom: 0;
+}
+
+/* Un titre sans espace, collé d'une seule traite, ne doit pas élargir la
+   colonne de 300 px au point de faire défiler la page. */
+.nsl-list__headline,
+.nsl-list__excerpt {
+  overflow-wrap: break-word;
+}
+
+.nsl-list__footer {
+  display: block;
+}
+
+/* Lien « Toutes les actualités » sous le carrousel. Il atterrit dans la colonne
+   flex .card-text, sous les points de navigation. Même règle que la section
+   mode liste : la structure ici, l'apparence dans le thème. */
+.nsl-allnews {
+  display: block;
+  align-self: flex-end;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   PAGE TOUTES LES ACTUALITÉS — news.php, gabarit news_page
+   ────────────────────────────────────────────────────────────────────────────
+   Mêmes contraintes que le mode liste : ni id, ni priorité forcée, jamais d'em.
+   À la différence du mode liste, cette section porte une mise en page complète :
+   la page sert aussi Academy et YPareo LMS, dont les thèmes ne l'habillent pas.
+
+   Trois choix mesurés sur academy-test3 (thème NEO), le 2026-09-25 :
+   - Taille du titre en rem, PAS par une classe h5 : le thème NEO resserre
+     l'échelle des titres (h3 16px, h4 et h5 14px, soit la taille du texte), la
+     classe n'y aurait rien agrandi. La racine vaut 16px dans les trois produits,
+     c'est la base qui vaut 14 — d'où rem oui, em non.
+   - Fond de carte en blanc, PAS --bs-body-bg : sur NEO c'est la couleur de la
+     page (#FAFAFA), la carte s'y confondait. --nsl-card-bg et --nsl-card-border
+     restent surchargeables par le thème.
+   - Pas de classe card sur l'article : les feuilles des plugins passent AVANT
+     celle du thème, et .card { display: flex } y écraserait la grille.
+   La pastille, elle, reste une DONNÉE (réglage « colour ») ; le bouton est un
+   btn-outline-primary, donc à la couleur de chaque thème.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.nsl-page__items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Une carte par actualité : média à gauche, texte à droite. Sans média, le texte
+   prend toute la largeur. align-items: stretch fait descendre la colonne texte
+   jusqu'au bas de la carte — c'est ce qui y cale le bouton « En savoir + ». */
+.nsl-page__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: stretch;
+  padding: 1rem;
+  border: 1px solid var(--nsl-card-border, var(--bs-border-color-translucent, rgba(0, 0, 0, 0.175)));
+  border-radius: var(--bs-border-radius-lg, 0.5rem);
+  background-color: var(--nsl-card-bg, #fff);
+}
+
+/* Le média occupe un tiers : c'est sa largeur, via le cadre 16:9, qui fixe la
+   hauteur de la carte. */
+.nsl-page__item--media {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+}
+
+/* Sous 768 px, le média passe au-dessus du texte. */
+@media (max-width: 767.98px) {
+  .nsl-page__item--media {
+    grid-template-columns: minmax(0, 1fr);
   }
-  .card-body .card-text #newsLabelContent {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
+}
+
+.nsl-page__media {
+  display: flex;
+  flex-direction: column;
+  align-self: start;
+  gap: 0.75rem;
+}
+
+/* Image seule, diapositives et vidéo partagent le même cadre 16:9 : les cartes
+   ont une hauteur régulière quel que soit le ratio des fichiers déposés. L'image
+   est affichée entière (contain), comme dans le bloc, jamais rognée. */
+.nsl-page__image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  border-radius: 0.3rem;
+  background: #f0f0f0;
+}
+
+/* Diaporama : la piste défile par translateX, posé par le module news_page. */
+.nsl-page__slideshow {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.3rem;
+  background: #f0f0f0;
+}
+
+.nsl-page__track {
+  display: flex;
+  transition: transform 0.35s ease-in-out;
+}
+
+.nsl-page__slide {
+  display: block;
+  flex: 0 0 100%;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nsl-page__track {
+    transition: none;
   }
-  .card-body .card-text #newsLabelContent .actualitesIcon {
-    max-width: 90% !important;
-    min-width: 90% !important;
-    margin-left: 0 !important;
-  }
-  .card-body .card-text #newsLabelContent #newsList {
-    min-width: 80%;
-    min-height: 100px !important;
-    width: 100%;
-    overflow: hidden;
-  }
-  .card-body .card-text #newsLabelContent #newsList #actualitesList {
-    min-width: 100%;
-    max-width: 100%;
-    width: 100%;
-    overflow-wrap: break-word;
-  }
-  .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem {
-    overflow: clip;
-  }
-  .card-body .card-text #newsLabelContent #newsList #actualitesList .actualitesListItem .actualitesCategories {
-    display: block;
-  }
-}/*# sourceMappingURL=styles.css.map */
+}
+
+.nsl-page__prev,
+.nsl-page__next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0 10px 6px;
+  border: none;
+  border-radius: 0.25rem;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.nsl-page__prev:hover,
+.nsl-page__next:hover,
+.nsl-page__prev:focus-visible,
+.nsl-page__next:focus-visible {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.nsl-page__prev { left: 6px; }
+.nsl-page__next { right: 6px; }
+
+.nsl-page__dots {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.nsl-page__dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+}
+
+.nsl-page__dot.is-active {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.nsl-page__video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.3rem;
+  overflow: hidden;
+  background: #000;
+}
+
+.nsl-page__video iframe,
+.nsl-page__video video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.nsl-page__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.nsl-page__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Pastille : texte blanc sur la couleur du réglage, comme l'icône du carrousel. */
+.nsl-page__tag {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.25rem;
+  background-color: var(--nsl-tag-color, transparent);
+  color: #fff;
+  white-space: nowrap;
+}
+
+.nsl-page__headline {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Titre, contenu : passent par format_text(), d'où les <p> possibles. */
+.nsl-page__headline > p:last-child,
+.nsl-page__content > p:last-child {
+  margin-bottom: 0;
+}
+
+.nsl-page__headline,
+.nsl-page__content {
+  overflow-wrap: break-word;
+}
+
+/* En bas à droite de la carte, quelle que soit la longueur du texte. */
+.nsl-page__more {
+  margin-top: auto;
+  align-self: flex-end;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   COULEURS D'ÉTIQUETTE — réglage « newstagcolourXX », une couleur par actualité
+   ────────────────────────────────────────────────────────────────────────────
+   Une couleur nommée posée sur une actualité remplace, sur son étiquette, la
+   couleur globale du bloc : le gabarit émet alors « nsl-tag nsl-tag--<nom> » et
+   PLUS AUCUN style en ligne — qui l'emporterait sur toute feuille et obligerait
+   le thème à répondre par une priorité forcée. Sans couleur nommée, rien ne
+   change : le style en ligne de la couleur globale reste émis, comme avant.
+
+   Ces teintes sont le rendu AUTONOME, pour les thèmes qui ne les habillent pas :
+   la teinte « pleine » de chaque couleur du composant Tag du design system Neo
+   (table BASIC). Une seule classe de poids, ni id ni priorité forcée : le thème,
+   chargé après les feuilles des plugins, l'emporte à poids égal.
+
+   Liste et page lisent déjà --nsl-tag-color en fond ; le carrousel colore le
+   texte, d'où sa règle dédiée. Liste des noms : news_loader::TAG_COLOURS.
+   ════════════════════════════════════════════════════════════════════════════ */
+.nsl-tag--blue    { --nsl-tag-color: #3d64ed; }
+.nsl-tag--cyan    { --nsl-tag-color: #167da4; }
+.nsl-tag--green   { --nsl-tag-color: #4d7c0f; }
+.nsl-tag--yellow  { --nsl-tag-color: #c45e0a; }
+.nsl-tag--pink    { --nsl-tag-color: #cd2361; }
+.nsl-tag--red     { --nsl-tag-color: #c8082d; }
+.nsl-tag--orange  { --nsl-tag-color: #dd370e; }
+.nsl-tag--teal    { --nsl-tag-color: #20817c; }
+.nsl-tag--purple  { --nsl-tag-color: #802ced; }
+.nsl-tag--indigo  { --nsl-tag-color: #6365d4; }
+.nsl-tag--neutral { --nsl-tag-color: #5f6e91; }
+
+/* Carrousel : deux classes, pour passer devant « .actualitesCategories » et sa
+   couleur par défaut, que le style en ligne écrasait jusqu'ici. */
+.actualitesCategories.nsl-tag {
+  color: var(--nsl-tag-color);
+}

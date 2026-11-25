@@ -1,0 +1,133 @@
+# Azure Pipelines - CI tri-version Moodle 4.5 LTS / 5.1 / 5.2.
+#
+# Objectif : sur demande, installer un vrai Moodle depuis zéro sur les trois branches et y
+# installer ce plugin. L'étape "install" est celle qui a le plus de valeur : elle vérifie ce
+# qu'aucune analyse statique ne peut voir, à savoir que le plugin s'installe réellement.
+#
+# PHP suit le plancher de chaque version Moodle :
+#   4.5 -> 8.1 minimum | 5.1 -> 8.2 minimum | 5.2 -> 8.3 minimum
+# PostgreSQL 16 est imposé par Moodle 5.2.
+#
+# /!\ Déposer ce fichier ne suffit pas : contrairement à GitHub Actions, Azure DevOps
+# n'auto-découvre pas les pipelines. Il faut le créer une fois dans l'UI :
+#   Pipelines > New pipeline > Azure Repos Git > <ce dépôt> > Existing Azure Pipelines YAML file
+#   > /azure-pipelines.yml
+
+# Déclenchement manuel uniquement : ce pipeline n'a d'intérêt qu'aux moments qui comptent
+# (avant une livraison, ou à la sortie d'une version majeure de Moodle pour savoir en
+# ~15 min lesquels des plugins cassent). Le lancer à chaque push serait disproportionné.
+# Pour l'exécuter : Pipelines > ce pipeline > "Run pipeline".
+trigger: none
+pr: none
+
+pool:
+  vmImage: 'ubuntu-22.04'
+
+strategy:
+  matrix:
+    moodle_45_php81:
+      phpVersion: '8.1'
+      moodleBranch: 'MOODLE_405_STABLE'
+    moodle_51_php82:
+      phpVersion: '8.2'
+      moodleBranch: 'MOODLE_501_STABLE'
+    moodle_52_php83:
+      phpVersion: '8.3'
+      moodleBranch: 'MOODLE_502_STABLE'
+  maxParallel: 3
+
+variables:
+  # moodle-plugin-ci >= 4.5.10 est requis pour Moodle 5.2.
+  pluginCiVersion: '^4.5.10'
+  DB: 'pgsql'
+
+steps:
+  # Le plugin doit vivre dans un sous-dossier : moodle-plugin-ci installe Moodle à côté.
+  - checkout: self
+    path: s/plugin
+
+  - script: |
+      set -e
+      docker run -d --name moodle-pg \
+        -e POSTGRES_USER=postgres \
+        -e POSTGRES_HOST_AUTH_METHOD=trust \
+        -p 5432:5432 \
+        postgres:16
+      for i in $(seq 1 30); do
+        docker exec moodle-pg pg_isready -U postgres && break
+        sleep 2
+      done
+    displayName: 'Démarrer PostgreSQL 16'
+
+  - script: |
+      set -e
+      sudo add-apt-repository -y ppa:ondrej/php
+      sudo apt-get update -qq
+      sudo apt-get install -y --no-install-recommends \
+        php$(phpVersion)-cli php$(phpVersion)-common php$(phpVersion)-curl \
+        php$(phpVersion)-mbstring php$(phpVersion)-xml php$(phpVersion)-zip \
+        php$(phpVersion)-gd php$(phpVersion)-intl php$(phpVersion)-soap \
+        php$(phpVersion)-pgsql php$(phpVersion)-opcache
+      sudo update-alternatives --set php /usr/bin/php$(phpVersion)
+      # Moodle exige max_input_vars >= 5000.
+      echo "max_input_vars = 5000" | sudo tee /etc/php/$(phpVersion)/cli/conf.d/99-moodle.ini
+      php -v
+    displayName: 'Installer PHP $(phpVersion)'
+
+  - script: |
+      set -e
+      sudo locale-gen en_AU.UTF-8
+      composer create-project -n --no-dev --prefer-dist \
+        moodlehq/moodle-plugin-ci $(Agent.BuildDirectory)/ci $(pluginCiVersion)
+      echo "##vso[task.prependpath]$(Agent.BuildDirectory)/ci/bin"
+      echo "##vso[task.prependpath]$(Agent.BuildDirectory)/ci/vendor/bin"
+    displayName: 'Installer moodle-plugin-ci'
+
+  # ÉTAPE CLÉ : clone le vrai Moodle de la branche visée, crée la base, installe le plugin.
+  - script: moodle-plugin-ci install --plugin $(Agent.BuildDirectory)/s/plugin --db-host=127.0.0.1
+    displayName: 'Installer Moodle $(moodleBranch) + le plugin'
+    env:
+      DB: $(DB)
+      MOODLE_BRANCH: $(moodleBranch)
+
+  # ---- Contrôles bloquants ----
+  - script: moodle-plugin-ci phplint
+    displayName: 'PHP Lint'
+    condition: succeededOrFailed()
+
+  - script: moodle-plugin-ci validate
+    displayName: 'Validation du plugin'
+    condition: succeededOrFailed()
+
+  - script: moodle-plugin-ci savepoints
+    displayName: 'Savepoints db/upgrade.php'
+    condition: succeededOrFailed()
+
+  - script: moodle-plugin-ci mustache
+    displayName: 'Lint Mustache'
+    condition: succeededOrFailed()
+
+  - script: moodle-plugin-ci phpunit --fail-on-warning
+    displayName: 'PHPUnit'
+    condition: succeededOrFailed()
+
+  - script: moodle-plugin-ci behat --profile chrome
+    displayName: 'Behat'
+    condition: succeededOrFailed()
+
+  # ---- Contrôles de style, non bloquants ----
+  # Pour les rendre bloquants, retirer la ligne continueOnError correspondante.
+  - script: moodle-plugin-ci phpcs --max-warnings 0
+    displayName: 'Style de code PHP (non bloquant)'
+    condition: succeededOrFailed()
+    continueOnError: true
+
+  - script: moodle-plugin-ci phpdoc --max-warnings 0
+    displayName: 'PHPDoc (non bloquant)'
+    condition: succeededOrFailed()
+    continueOnError: true
+
+  - script: moodle-plugin-ci grunt --max-lint-warnings 0
+    displayName: 'Grunt / ESLint (non bloquant)'
+    condition: succeededOrFailed()
+    continueOnError: true
